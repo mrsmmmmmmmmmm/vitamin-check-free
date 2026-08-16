@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>私のビタミン・ミネラル目安量チャート｜FREE</title>
+<style>
+:root{
+  --bg:#f7f5ef; --card:#ffffff; --ink:#22302b; --muted:#6f7b76;
+  --accent:#5b7f70; --accent2:#e9f1ed; --line:#dfe7e2; --warn:#fff5df;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",Meiryo,sans-serif;
+  background:linear-gradient(180deg,#f4f7f4 0%,var(--bg) 100%); color:var(--ink);
+}
+.wrap{max-width:980px;margin:0 auto;padding:28px 18px 60px}
+.hero{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:28px;box-shadow:0 10px 30px rgba(40,70,55,.06)}
+.kicker{font-size:13px;font-weight:700;letter-spacing:.08em;color:var(--accent)}
+h1{font-size:clamp(26px,5vw,42px);line-height:1.2;margin:8px 0 10px}
+.lead{color:var(--muted);line-height:1.8;margin:0}
+.form{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px}
+label{font-size:13px;font-weight:700;display:block;margin-bottom:7px}
+select,input,button{
+  width:100%;font:inherit;border-radius:14px;border:1px solid var(--line);padding:13px 14px;background:#fff;color:var(--ink)
+}
+button{border:0;background:var(--accent);color:#fff;font-weight:800;cursor:pointer;transition:.15s}
+button:hover{transform:translateY(-1px);filter:brightness(.98)}
+.hidden{display:none!important}
+.summary{margin:24px 0 12px;padding:18px 20px;background:var(--accent2);border-radius:18px}
+.summary strong{font-size:18px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;min-height:150px}
+.card .name{font-weight:800;font-size:17px}
+.card .cat{font-size:12px;color:var(--muted);margin-top:2px}
+.card .value{font-size:30px;font-weight:900;margin:16px 0 5px;letter-spacing:-.02em}
+.card .unit{font-size:14px;font-weight:700;color:var(--muted)}
+.card .type{display:inline-block;margin-top:10px;padding:5px 9px;border-radius:999px;background:#f1f5f2;font-size:11px;font-weight:700;color:#567065}
+.note,.source,.caution{margin-top:18px;padding:18px 20px;border-radius:18px;line-height:1.7;font-size:13px}
+.note{background:#f1f5f2}
+.caution{background:var(--warn)}
+.source{background:#fff;border:1px solid var(--line);color:var(--muted)}
+.source a{color:var(--accent)}
+.small{font-size:12px;color:var(--muted)}
+@media(max-width:720px){
+ .form,.grid{grid-template-columns:1fr}
+ .hero{padding:22px 18px}
+ .card{min-height:0}
+}
+@media print{
+ body{background:#fff}.wrap{max-width:none;padding:0}.hero{box-shadow:none}
+ button{display:none}.source a{color:#000;text-decoration:none}
+}
+
+.menu-section{margin-top:24px;background:#fff;border:1px solid var(--line);border-radius:24px;padding:24px}
+.menu-section h2{margin:0 0 8px;font-size:24px}
+.menu-section p{margin:0;color:var(--muted);line-height:1.7}
+.menu-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:18px}
+.menu-box label{font-size:12px}
+.menu-box select{font-size:14px}
+.selected-menu{margin-top:18px;padding:16px 18px;background:#f7faf8;border-radius:16px;line-height:1.8}
+.progress-wrap{margin-top:20px}
+.progress-row{display:grid;grid-template-columns:150px 1fr 150px;gap:12px;align-items:center;margin:10px 0}
+.progress-label{font-size:13px;font-weight:800}
+.progress-track{height:12px;border-radius:999px;background:#edf1ee;overflow:hidden}
+.progress-fill{height:100%;background:var(--accent);border-radius:999px;width:0}
+.progress-num{text-align:right;font-size:12px;color:var(--muted)}
+.menu-note{margin-top:14px;font-size:12px;color:var(--muted);line-height:1.7}
+@media(max-width:900px){.menu-grid{grid-template-columns:1fr 1fr}.progress-row{grid-template-columns:110px 1fr}.progress-num{grid-column:2;text-align:left;margin-top:-6px}}
+@media(max-width:560px){.menu-grid{grid-template-columns:1fr}}
+
+
+.radar-card{margin-top:24px;background:#fff;border:1px solid var(--line);border-radius:24px;padding:24px}
+.radar-card h2{margin:0 0 6px;font-size:24px}
+.radar-card p{margin:0 0 16px;color:var(--muted);line-height:1.7}
+.radar-wrap{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:20px;align-items:center}
+#radarCanvas{width:100%;max-width:620px;aspect-ratio:1/1;display:block;margin:auto}
+.radar-legend{font-size:13px;line-height:1.8}
+.legend-item{display:flex;align-items:center;gap:8px;margin:8px 0}
+.legend-line{width:22px;height:4px;border-radius:999px;background:var(--accent)}
+.legend-dash{width:22px;height:0;border-top:3px dashed #8b9792}
+.legend-tip{margin-top:12px;padding:12px 14px;background:#f7faf8;border-radius:14px;color:var(--muted)}
+@media(max-width:760px){.radar-wrap{grid-template-columns:1fr}}
+
+
+.advice-card{margin-top:22px;background:#fff;border:1px solid var(--line);border-radius:22px;padding:22px}
+.advice-card h2{margin:0 0 8px;font-size:22px}
+.advice-box{margin-top:12px;padding:16px 18px;background:#f7faf8;border-radius:16px;line-height:1.8}
+.advice-box strong{font-size:16px}
+.advice-sub{margin-top:8px;color:var(--muted);font-size:13px}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <div class="kicker">FREE｜厚生労働省「日本人の食事摂取基準（2025年版）」ベース</div>
+    <h1>私のビタミン・ミネラル<br>目安量チャート</h1>
+    <p class="lead">年齢と性別から、1日に意識したいビタミン・ミネラルの基準量を簡易表示します。成人（18歳以上）向けです。</p>
+
+    <div class="form">
+      <div>
+        <label for="age">年齢</label>
+        <input id="age" type="number" min="18" max="120" value="48">
+      </div>
+      <div>
+        <label for="sex">性別</label>
+        <select id="sex">
+          <option value="female" selected>女性</option>
+          <option value="male">男性</option>
+        </select>
+      </div>
+      <div id="menstruationWrap">
+        <label for="menstruation">月経</label>
+        <select id="menstruation">
+          <option value="yes">あり</option>
+          <option value="no" selected>なし</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-top:14px">
+      <button id="calc">私の目安量を見る</button>
+    </div>
+  </section>
+
+  <div id="result" class="hidden">
+    <div class="summary">
+      <strong id="profile"></strong><br>
+      <span class="small">「推奨量」が設定されている栄養素は推奨量を、「目安量」が設定されている栄養素は目安量を中心に表示しています。</span>
+    </div>
+    <div id="cards" class="grid"></div>
+
+    <div class="caution">
+      <b>このチャートの使い方</b><br>
+      これは「あなたに不足している量」を診断するものではなく、健康な人を対象にした1日の摂取基準の目安です。
+      血液検査、食事内容、疾患、服薬、妊娠・授乳などによって適切な量は変わります。特に腎機能に異常がある場合のカリウム、サプリメントによる高用量摂取などは自己判断で増やさないでください。
+    </div>
+
+    <div class="note">
+      <b>ポイント</b><br>
+      ビタミン・ミネラルは、すべてを「体重×○mg」のように計算するものではありません。
+      このチャートでは、厚生労働省の年齢区分・性別ごとの基準値を自動で選んでいます。
+    </div>
+
+
+    <section class="menu-section">
+      <h2>🍚 今日の食事を選んでみる</h2>
+      <p>主食・メイン・副菜・汁物・間食を選ぶと、主要ビタミン・ミネラルの摂取予定量と「私の目安量」に対する充足率を概算します。選択するたびに下の数値とレーダーチャートが自動更新されます。</p>
+
+      <div class="menu-grid">
+        <div class="menu-box">
+          <label for="staple">主食</label>
+          <select id="staple"></select>
+        </div>
+        <div class="menu-box">
+          <label for="mainDish">メイン</label>
+          <select id="mainDish"></select>
+        </div>
+        <div class="menu-box">
+          <label for="sideDish">副菜</label>
+          <select id="sideDish"></select>
+        </div>
+        <div class="menu-box">
+          <label for="soup">汁物</label>
+          <select id="soup"></select>
+        </div>
+        <div class="menu-box">
+          <label for="snack">間食・プラス1</label>
+          <select id="snack"></select>
+        </div>
+      </div>
+
+      <div id="selectedMenu" class="selected-menu"></div>
+
+      <div class="progress-wrap" id="nutrientProgress"></div>
+      <div class="menu-note">
+        ※食品成分は文部科学省「日本食品標準成分表（八訂）増補2023年」を参考にした標準的な1食分の概算です。
+        品種、商品、調理法、廃棄率、加熱による損失などで実際の値は変動します。医療目的の栄養計算には使用しないでください。
+      </div>
+    </section>
+
+
+    <section class="radar-card">
+      <h2>🕸 必要量と摂取予定量を比較</h2>
+      <p>外側の基準線を「1日の必要量＝100%」として、選んだ食事でどこまで満たせる予定かをレーダーチャートで表示します。</p>
+      <div class="radar-wrap">
+        <canvas id="radarCanvas" width="620" height="620"></canvas>
+        <div class="radar-legend">
+          <div class="legend-item"><span class="legend-dash"></span>必要量 100%</div>
+          <div class="legend-item"><span class="legend-line"></span>摂取予定量</div>
+          <div class="legend-tip">
+            100%に近いほど1日の目安量に近づいています。<br>
+            100%を超えていても、栄養素によっては上限量があるため「多いほどよい」という意味ではありません。
+          </div>
+        </div>
+      </div>
+    </section>
+<div class="source">
+      <b>出典</b><br>
+      厚生労働省「日本人の食事摂取基準（2025年版）」策定検討会報告書（2025年度から適用）。<br>
+      <a href="https://www.mhlw.go.jp/stf/newpage_44138.html" target="_blank" rel="noopener">厚生労働省 公表ページ</a><br>
+      <span class="small">※基準量：厚生労働省「日本人の食事摂取基準（2025年版）」／食品成分：文部科学省「日本食品標準成分表（八訂）増補2023年」を参考にした簡易計算です。</span>
+    </div>
+  </div>
+</div>
+
+<script>
+const groups = [
+  {min:18,max:29,key:"18-29",label:"18〜29歳"},
+  {min:30,max:49,key:"30-49",label:"30〜49歳"},
+  {min:50,max:64,key:"50-64",label:"50〜64歳"},
+  {min:65,max:74,key:"65-74",label:"65〜74歳"},
+  {min:75,max:200,key:"75+",label:"75歳以上"}
+];
+
+// values: male/female by age group.
+// display = recommended amount when available, otherwise adequate intake / target amount.
+const data = {
+  "ビタミンA": {
+    unit:"μgRAE/日", type:"推奨量", cat:"ビタミン",
+    male:{"18-29":850,"30-49":900,"50-64":900,"65-74":850,"75+":800},
+    female:{"18-29":650,"30-49":700,"50-64":700,"65-74":700,"75+":650}
+  },
+  "ビタミンD": {
+    unit:"μg/日", type:"目安量", cat:"ビタミン",
+    male:{"18-29":9.0,"30-49":9.0,"50-64":9.0,"65-74":9.0,"75+":9.0},
+    female:{"18-29":9.0,"30-49":9.0,"50-64":9.0,"65-74":9.0,"75+":9.0}
+  },
+  "ビタミンE": {
+    unit:"mg/日", type:"目安量", cat:"ビタミン",
+    male:{"18-29":6.5,"30-49":6.5,"50-64":6.5,"65-74":7.5,"75+":7.0},
+    female:{"18-29":5.0,"30-49":6.0,"50-64":6.0,"65-74":7.0,"75+":6.0}
+  },
+  "ビタミンB1": {
+    unit:"mg/日", type:"推奨量", cat:"ビタミン",
+    male:{"18-29":1.1,"30-49":1.2,"50-64":1.1,"65-74":1.0,"75+":1.0},
+    female:{"18-29":0.8,"30-49":0.9,"50-64":0.8,"65-74":0.8,"75+":0.7}
+  },
+  "ビタミンB2": {
+    unit:"mg/日", type:"推奨量", cat:"ビタミン",
+    male:{"18-29":1.6,"30-49":1.7,"50-64":1.6,"65-74":1.4,"75+":1.4},
+    female:{"18-29":1.2,"30-49":1.2,"50-64":1.2,"65-74":1.1,"75+":1.1}
+  },
+  "ビタミンB6": {
+    unit:"mg/日", type:"推奨量", cat:"ビタミン",
+    male:{"18-29":1.5,"30-49":1.5,"50-64":1.5,"65-74":1.4,"75+":1.4},
+    female:{"18-29":1.2,"30-49":1.2,"50-64":1.2,"65-74":1.2,"75+":1.2}
+  },
+  "ビタミンB12": {
+    unit:"μg/日", type:"目安量", cat:"ビタミン",
+    male:{"18-29":4.0,"30-49":4.0,"50-64":4.0,"65-74":4.0,"75+":4.0},
+    female:{"18-29":4.0,"30-49":4.0,"50-64":4.0,"65-74":4.0,"75+":4.0}
+  },
+  "葉酸": {
+    unit:"μg/日", type:"推奨量", cat:"ビタミン",
+    male:{"18-29":240,"30-49":240,"50-64":240,"65-74":240,"75+":240},
+    female:{"18-29":240,"30-49":240,"50-64":240,"65-74":240,"75+":240}
+  },
+  "ビタミンC": {
+    unit:"mg/日", type:"推奨量", cat:"ビタミン",
+    male:{"18-29":100,"30-49":100,"50-64":100,"65-74":100,"75+":100},
+    female:{"18-29":100,"30-49":100,"50-64":100,"65-74":100,"75+":100}
+  },
+  "カリウム": {
+    unit:"mg/日", type:"目標量", cat:"ミネラル",
+    male:{"18-29":"3,000以上","30-49":"3,000以上","50-64":"3,000以上","65-74":"3,000以上","75+":"3,000以上"},
+    female:{"18-29":"2,600以上","30-49":"2,600以上","50-64":"2,600以上","65-74":"2,600以上","75+":"2,600以上"}
+  },
+  "カルシウム": {
+    unit:"mg/日", type:"推奨量", cat:"ミネラル",
+    male:{"18-29":800,"30-49":750,"50-64":750,"65-74":750,"75+":750},
+    female:{"18-29":650,"30-49":650,"50-64":650,"65-74":650,"75+":600}
+  },
+  "マグネシウム": {
+    unit:"mg/日", type:"推奨量", cat:"ミネラル",
+    male:{"18-29":340,"30-49":380,"50-64":370,"65-74":350,"75+":330},
+    female:{"18-29":280,"30-49":290,"50-64":290,"65-74":280,"75+":270}
+  },
+  "鉄": {
+    unit:"mg/日", type:"推奨量", cat:"ミネラル",
+    male:{"18-29":7.0,"30-49":7.5,"50-64":7.0,"65-74":7.0,"75+":6.5},
+    femaleNoMenses:{"18-29":6.0,"30-49":6.0,"50-64":6.0,"65-74":6.0,"75+":5.5},
+    femaleMenses:{"18-29":10.0,"30-49":10.5,"50-64":10.5,"65-74":6.0,"75+":5.5}
+  },
+  "亜鉛": {
+    unit:"mg/日", type:"推奨量", cat:"ミネラル",
+    male:{"18-29":9.0,"30-49":9.5,"50-64":9.5,"65-74":9.0,"75+":9.0},
+    female:{"18-29":7.5,"30-49":8.0,"50-64":8.0,"65-74":7.5,"75+":7.0}
+  }
+};
+
+const ageEl = document.getElementById("age");
+const sexEl = document.getElementById("sex");
+const menstruationWrap = document.getElementById("menstruationWrap");
+const menstruationEl = document.getElementById("menstruation");
+const cards = document.getElementById("cards");
+const result = document.getElementById("result");
+const profile = document.getElementById("profile");
+
+function getGroup(age){
+  return groups.find(g => age >= g.min && age <= g.max);
+}
+
+function valueFor(item, sex, groupKey, menses){
+  if(item === data["鉄"] && sex === "female"){
+    return menses === "yes"
+      ? item.femaleMenses[groupKey]
+      : item.femaleNoMenses[groupKey];
+  }
+  return item[sex][groupKey];
+}
+
+function render(){
+  const age = Number(ageEl.value);
+  if(!Number.isFinite(age) || age < 18){
+    alert("18歳以上の年齢を入力してください。");
+    return;
+  }
+  const sex = sexEl.value;
+  const group = getGroup(age);
+  if(!group){
+    alert("年齢を確認してください。");
+    return;
+  }
+  const menses = menstruationEl.value;
+  const sexLabel = sex === "female" ? "女性" : "男性";
+  const mensesLabel = sex === "female" ? `・月経${menses === "yes" ? "あり" : "なし"}` : "";
+  profile.textContent = `${age}歳・${sexLabel}${mensesLabel}｜${group.label}の基準`;
+
+  cards.innerHTML = "";
+  for(const [name,item] of Object.entries(data)){
+    const value = valueFor(item, sex, group.key, menses);
+    const el = document.createElement("div");
+    el.className = "card";
+    el.innerHTML = `
+      <div class="name">${name}</div>
+      <div class="cat">${item.cat}</div>
+      <div class="value">${value}<span class="unit"> ${item.unit}</span></div>
+      <span class="type">${item.type}</span>
+    `;
+    cards.appendChild(el);
+  }
+  result.classList.remove("hidden");
+  result.scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+sexEl.addEventListener("change",()=>{
+  menstruationWrap.classList.toggle("hidden", sexEl.value !== "female");
+});
+document.getElementById("calc").addEventListener("click", render);
+
+// ---- 簡易メニュー計算 ----
+// 数値は標準的な1食分を想定した概算。単位は各 nutrient の表示単位に合わせる。
+const foodMenus = {
+  staple: [
+    {name:"選択しない", serving:"", n:{}},
+    {name:"白ごはん", serving:"150g", n:{"B1":0.03,"B2":0.02,"B6":0.03,"葉酸":5,"Mg":11,"Fe":0.2,"Zn":0.9,"K":44}},
+    {name:"玄米ごはん", serving:"150g", n:{"B1":0.24,"B2":0.03,"B6":0.32,"葉酸":15,"Mg":74,"Fe":0.9,"Zn":1.2,"K":143}},
+    {name:"雑穀ごはん", serving:"150g", n:{"B1":0.12,"B2":0.04,"B6":0.12,"葉酸":12,"Mg":45,"Fe":0.8,"Zn":1.1,"K":120}},
+    {name:"全粒粉パン", serving:"2枚 約120g", n:{"B1":0.20,"B2":0.10,"B6":0.10,"葉酸":45,"Mg":70,"Fe":1.6,"Zn":1.5,"K":250}},
+    {name:"オートミール", serving:"40g", n:{"B1":0.08,"B2":0.03,"B6":0.05,"葉酸":12,"Mg":40,"Fe":1.6,"Zn":0.8,"K":104}}
+  ],
+  mainDish: [
+    {name:"選択しない", serving:"", n:{}},
+    {name:"焼き鮭", serving:"80g", n:{"A":24,"D":25.6,"E":1.0,"B1":0.12,"B2":0.14,"B6":0.51,"B12":4.7,"葉酸":16,"Mg":24,"Fe":0.4,"Zn":0.5,"K":280}},
+    {name:"サバ塩焼き", serving:"80g", n:{"A":30,"D":4.0,"E":1.0,"B1":0.12,"B2":0.23,"B6":0.40,"B12":10.4,"葉酸":10,"Mg":24,"Fe":1.0,"Zn":0.9,"K":320}},
+    {name:"鶏むね肉", serving:"100g", n:{"A":18,"E":0.3,"B1":0.10,"B2":0.10,"B6":0.60,"B12":0.2,"葉酸":8,"Mg":28,"Fe":0.4,"Zn":0.7,"K":350}},
+    {name:"豚ヒレ肉", serving:"100g", n:{"B1":1.22,"B2":0.27,"B6":0.54,"B12":0.5,"葉酸":2,"Mg":28,"Fe":0.9,"Zn":2.2,"K":430}},
+    {name:"牛赤身肉", serving:"100g", n:{"B1":0.09,"B2":0.20,"B6":0.35,"B12":2.0,"葉酸":8,"Mg":22,"Fe":2.5,"Zn":4.5,"K":330}},
+  ],
+  sideDish: [
+    {name:"選択しない", serving:"", n:{}},
+    {name:"ほうれん草のおひたし", serving:"70g", n:{"A":315,"E":1.5,"B1":0.08,"B2":0.14,"B6":0.10,"葉酸":77,"C":13,"Mg":48,"Ca":34,"Fe":1.4,"Zn":0.5,"K":343}},
+    {name:"ブロッコリー", serving:"80g", n:{"A":54,"E":2.4,"B1":0.14,"B2":0.18,"B6":0.24,"葉酸":96,"C":112,"Mg":23,"Ca":40,"Fe":1.0,"Zn":0.6,"K":368}},
+    {name:"ひじき煮", serving:"50g", n:{"A":40,"B1":0.03,"B2":0.05,"葉酸":18,"Mg":35,"Ca":70,"Fe":1.2,"Zn":0.4,"K":160}},
+    {name:"冷奴", serving:"150g", n:{"B1":0.12,"B2":0.06,"B6":0.08,"葉酸":18,"Mg":75,"Ca":129,"Fe":2.3,"Zn":0.9,"K":225}},
+    {name:"アボカド", serving:"1/2個 約70g", n:{"A":4,"E":2.3,"B1":0.06,"B2":0.14,"B6":0.23,"葉酸":59,"C":8,"Mg":24,"Ca":6,"Fe":0.4,"Zn":0.5,"K":413}}
+  ],
+  soup: [
+    {name:"選択しない", serving:"", n:{}},
+    {name:"豆腐とわかめの味噌汁", serving:"1杯", n:{"B1":0.07,"B2":0.05,"B6":0.07,"葉酸":18,"Mg":35,"Ca":55,"Fe":0.8,"Zn":0.5,"K":220}},
+    {name:"あさりの味噌汁", serving:"1杯", n:{"B12":20.0,"B1":0.03,"B2":0.12,"B6":0.05,"葉酸":12,"Mg":30,"Ca":45,"Fe":2.2,"Zn":1.1,"K":210}},
+    {name:"きのこ汁", serving:"1杯", n:{"D":0.8,"B1":0.10,"B2":0.14,"B6":0.08,"葉酸":30,"Mg":18,"K":280}},
+    {name:"野菜たっぷり味噌汁", serving:"1杯", n:{"A":90,"E":0.7,"B1":0.10,"B2":0.08,"B6":0.12,"葉酸":45,"C":18,"Mg":30,"Ca":55,"Fe":0.8,"Zn":0.4,"K":420}}
+  ],
+  snack: [
+    {name:"選択しない", serving:"", n:{}},
+    {name:"アーモンド", serving:"20g", n:{"E":5.8,"B1":0.04,"B2":0.21,"B6":0.02,"葉酸":13,"Mg":58,"Ca":52,"Fe":0.7,"Zn":0.6,"K":152}},
+    {name:"プレーンヨーグルト", serving:"150g", n:{"A":50,"D":0.2,"B1":0.06,"B2":0.21,"B12":0.2,"葉酸":17,"Mg":18,"Ca":180,"Zn":0.6,"K":255}},
+    {name:"キウイ", serving:"1個 約100g", n:{"A":6,"E":1.3,"B1":0.01,"B2":0.02,"B6":0.11,"葉酸":37,"C":71,"Mg":13,"Ca":26,"Fe":0.3,"Zn":0.1,"K":300}},
+    {name:"バナナ", serving:"1本 約100g", n:{"E":0.5,"B1":0.05,"B2":0.04,"B6":0.38,"葉酸":26,"C":16,"Mg":32,"Ca":6,"Fe":0.3,"Zn":0.2,"K":360}},
+    {name:"小魚＋ナッツ", serving:"20g", n:{"E":1.5,"B12":2.0,"B1":0.03,"B2":0.06,"葉酸":8,"Mg":50,"Ca":180,"Fe":1.0,"Zn":0.9,"K":160}}
+  ]
+};
+
+const keyMap = {
+  "ビタミンA":"A","ビタミンD":"D","ビタミンE":"E","ビタミンB1":"B1","ビタミンB2":"B2",
+  "ビタミンB6":"B6","ビタミンB12":"B12","葉酸":"葉酸","ビタミンC":"C","カリウム":"K",
+  "カルシウム":"Ca","マグネシウム":"Mg","鉄":"Fe","亜鉛":"Zn"
+};
+
+function populateMenus(){
+  for(const cat of Object.keys(foodMenus)){
+    const sel = document.getElementById(cat);
+    if(!sel) continue;
+    sel.innerHTML = "";
+    foodMenus[cat].forEach((f,i)=>{
+      const o = document.createElement("option");
+      o.value = i;
+      o.textContent = f.name + (f.serving ? `（${f.serving}）` : "");
+      sel.appendChild(o);
+    });
+    sel.addEventListener("change", updateMeal);
+  }
+}
+
+function currentTarget(name){
+  const age = Number(ageEl.value);
+  const group = getGroup(age);
+  if(!group) return null;
+  const sex = sexEl.value;
+  const menses = menstruationEl.value;
+  const item = data[name];
+  const v = valueFor(item, sex, group.key, menses);
+  if(typeof v === "string"){
+    return parseFloat(v.replace(/,/g,""));
+  }
+  return Number(v);
+}
+
+function updateMeal(){
+  if(result.classList.contains("hidden")) return;
+  const total = {};
+  const chosen = [];
+  for(const cat of Object.keys(foodMenus)){
+    const sel = document.getElementById(cat);
+    if(!sel) continue;
+    const f = foodMenus[cat][Number(sel.value || 0)];
+    if(f && f.name !== "選択しない"){
+      chosen.push(`${f.name}${f.serving ? `（${f.serving}）` : ""}`);
+      for(const [k,v] of Object.entries(f.n)){
+        total[k] = (total[k] || 0) + v;
+      }
+    }
+  }
+  const selected = document.getElementById("selectedMenu");
+  selected.innerHTML = chosen.length
+    ? `<b>選んだメニュー</b><br>${chosen.join(" ＋ ")}`
+    : `<b>選んだメニュー</b><br>まだ選択されていません。`;
+
+  const wrap = document.getElementById("nutrientProgress");
+  wrap.innerHTML = "<b>この組み合わせでどのくらい摂れる？</b>";
+  for(const [name,item] of Object.entries(data)){
+    const short = keyMap[name];
+    const intake = total[short] || 0;
+    const target = currentTarget(name);
+    if(!target) continue;
+    const pct = Math.max(0, intake/target*100);
+    const row = document.createElement("div");
+    row.className = "progress-row";
+    row.innerHTML = `
+      <div class="progress-label">${name}</div>
+      <div class="progress-track"><div class="progress-fill" style="width:${Math.min(pct,100)}%"></div></div>
+      <div class="progress-num">${formatVal(intake)} ${item.unit.replace("/日","")} ／ ${target} ${item.unit}（${Math.round(pct)}%）</div>
+    `;
+    wrap.appendChild(row);
+  }
+}
+
+function formatVal(v){
+  if(v >= 100) return Math.round(v).toLocaleString();
+  if(v >= 10) return (Math.round(v*10)/10).toString();
+  return (Math.round(v*100)/100).toString();
+}
+
+
+// ---- 追加メニュー ----
+foodMenus.staple.push(
+
+  {name:"テーブルロール", serving:"2個 約60g", n:{"B1":0.07,"B2":0.04,"B6":0.03,"葉酸":22,"Mg":14,"Ca":18,"Fe":0.5,"Zn":0.5,"K":70}},
+
+  {name:"そば（ゆで）", serving:"1玉 約200g", n:{"B1":0.10,"B2":0.04,"B6":0.10,"葉酸":16,"Mg":54,"Fe":1.6,"Zn":0.8,"K":68}},
+  {name:"うどん（ゆで）", serving:"1玉 約200g", n:{"B1":0.04,"B2":0.02,"B6":0.04,"葉酸":4,"Mg":12,"Fe":0.4,"Zn":0.4,"K":18}},
+  {name:"さつまいも", serving:"150g", n:{"A":4,"E":1.5,"B1":0.15,"B2":0.05,"B6":0.30,"葉酸":74,"C":44,"Mg":36,"Ca":60,"Fe":0.9,"Zn":0.3,"K":720}},
+  {name:"じゃがいも", serving:"150g", n:{"B1":0.14,"B2":0.05,"B6":0.30,"葉酸":30,"C":42,"Mg":30,"Ca":8,"Fe":0.6,"Zn":0.3,"K":615}},
+  {name:"おにぎり", serving:"1個 約120g", n:{"B1":0.02,"B2":0.02,"B6":0.03,"葉酸":4,"Mg":9,"Fe":0.2,"Zn":0.7,"K":35}}
+);
+
+foodMenus.mainDish.push(
+
+  {name:"鶏の唐揚げ", serving:"4個 約120g", n:{"A":28,"E":1.2,"B1":0.10,"B2":0.18,"B6":0.32,"B12":0.3,"葉酸":10,"Mg":28,"Ca":18,"Fe":1.0,"Zn":1.8,"K":320}},
+  {name:"ハンバーグ（合挽120g）", serving:"1個", n:{"A":20,"E":0.8,"B1":0.25,"B2":0.28,"B6":0.35,"B12":2.4,"葉酸":12,"Mg":30,"Ca":24,"Fe":2.4,"Zn":4.8,"K":360}},
+  {name:"カレイの煮付け", serving:"1切れ 約100g", n:{"A":12,"D":3.0,"E":1.0,"B1":0.08,"B2":0.18,"B6":0.20,"B12":2.8,"葉酸":8,"Mg":28,"Ca":35,"Fe":0.4,"Zn":0.7,"K":330}},
+  {name:"アジフライ", serving:"1枚 約100g", n:{"A":18,"D":4.0,"E":2.0,"B1":0.10,"B2":0.18,"B6":0.28,"B12":5.5,"葉酸":10,"Mg":30,"Ca":45,"Fe":1.0,"Zn":0.9,"K":280}},
+  {name:"麻婆豆腐", serving:"1人前 約200g", n:{"A":25,"E":1.0,"B1":0.20,"B2":0.15,"B6":0.18,"B12":0.3,"葉酸":28,"Mg":75,"Ca":120,"Fe":2.1,"Zn":1.7,"K":420}},
+  {name:"鮭のムニエル", serving:"鮭80g", n:{"A":28,"D":24.0,"E":1.6,"B1":0.13,"B2":0.16,"B6":0.48,"B12":4.5,"葉酸":15,"Mg":25,"Ca":18,"Fe":0.5,"Zn":0.6,"K":300}},
+  {name:"マカロニグラタン", serving:"1皿 約250g", n:{"A":120,"D":0.8,"E":1.0,"B1":0.15,"B2":0.35,"B6":0.12,"B12":0.8,"葉酸":35,"Mg":38,"Ca":220,"Fe":1.2,"Zn":1.8,"K":380}},
+
+  {name:"いわし塩焼き", serving:"80g", n:{"A":26,"D":25.6,"E":1.6,"B1":0.02,"B2":0.29,"B6":0.35,"B12":12.8,"葉酸":8,"Mg":28,"Ca":56,"Fe":1.7,"Zn":1.3,"K":280}},
+  {name:"まぐろ赤身刺身", serving:"100g", n:{"D":5.0,"E":0.8,"B1":0.10,"B2":0.05,"B6":0.85,"B12":1.3,"葉酸":8,"Mg":45,"Fe":1.1,"Zn":0.5,"K":380}},
+  {name:"木綿豆腐ステーキ", serving:"150g", n:{"B1":0.14,"B2":0.06,"B6":0.08,"葉酸":18,"Mg":86,"Ca":140,"Fe":2.3,"Zn":0.9,"K":165}},
+  {name:"鶏もも肉ソテー", serving:"100g", n:{"A":35,"E":0.5,"B1":0.08,"B2":0.15,"B6":0.25,"B12":0.3,"葉酸":8,"Mg":22,"Fe":0.7,"Zn":1.6,"K":270}},
+  {name:"豚の生姜焼き", serving:"豚肉100g", n:{"B1":0.80,"B2":0.22,"B6":0.35,"B12":0.4,"葉酸":3,"Mg":25,"Fe":0.7,"Zn":1.8,"K":350}}
+);
+
+foodMenus.sideDish.push(
+
+  {name:"納豆＋卵", serving:"納豆45g＋卵1個", n:{"A":105,"D":1.9,"E":1.1,"B1":0.08,"B2":0.42,"B6":0.16,"B12":0.6,"葉酸":65,"C":0,"Mg":57,"Ca":69,"Fe":2.0,"Zn":1.7,"K":350}},
+  {name:"卵2個", serving:"約100g", n:{"A":210,"D":3.8,"E":1.3,"B1":0.06,"B2":0.43,"B6":0.08,"B12":1.1,"葉酸":49,"Mg":11,"Ca":51,"Fe":1.5,"Zn":1.1,"K":130}},
+  {name:"キムチ", serving:"50g", n:{"A":70,"E":0.4,"B1":0.03,"B2":0.07,"B6":0.11,"葉酸":23,"C":12,"Mg":9,"Ca":25,"Fe":0.4,"Zn":0.2,"K":170}},
+  {name:"もずく酢", serving:"1パック 約70g", n:{"B1":0.01,"B2":0.02,"葉酸":9,"Mg":11,"Ca":16,"Fe":0.3,"Zn":0.1,"K":20}},
+  {name:"たたききゅうり", serving:"100g", n:{"A":28,"E":0.3,"B1":0.03,"B2":0.03,"B6":0.05,"葉酸":25,"C":14,"Mg":15,"Ca":26,"Fe":0.3,"Zn":0.2,"K":200}},
+  {name:"きんぴらごぼう", serving:"80g", n:{"A":70,"E":0.6,"B1":0.06,"B2":0.04,"B6":0.08,"葉酸":30,"C":3,"Mg":35,"Ca":40,"Fe":0.9,"Zn":0.4,"K":260}},
+  {name:"もやしのナムル", serving:"100g", n:{"E":0.5,"B1":0.05,"B2":0.07,"B6":0.10,"葉酸":42,"C":8,"Mg":15,"Ca":14,"Fe":0.5,"Zn":0.3,"K":120}},
+  {name:"だし巻き卵", serving:"卵1.5個分 約80g", n:{"A":160,"D":2.8,"E":1.0,"B1":0.05,"B2":0.32,"B6":0.07,"B12":0.8,"葉酸":36,"Mg":9,"Ca":45,"Fe":1.1,"Zn":0.9,"K":105}},
+  {name:"茶碗蒸し", serving:"1個 約150g", n:{"A":120,"D":1.5,"E":0.8,"B1":0.05,"B2":0.18,"B6":0.08,"B12":1.0,"葉酸":24,"Mg":18,"Ca":55,"Fe":0.8,"Zn":0.8,"K":180}},
+  {name:"ナスの煮浸し", serving:"100g", n:{"A":12,"E":0.5,"B1":0.04,"B2":0.05,"B6":0.07,"葉酸":28,"C":4,"Mg":18,"Ca":18,"Fe":0.4,"Zn":0.2,"K":220}},
+  {name:"大根サラダ", serving:"100g", n:{"A":5,"E":0.2,"B1":0.03,"B2":0.02,"B6":0.05,"葉酸":34,"C":12,"Mg":10,"Ca":24,"Fe":0.2,"Zn":0.2,"K":230}},
+  {name:"ところてん", serving:"150g", n:{"Mg":6,"Ca":6,"Fe":0.2,"Zn":0.1,"K":5}},
+
+  {name:"小松菜のおひたし", serving:"70g", n:{"A":182,"E":0.7,"B1":0.06,"B2":0.09,"B6":0.08,"葉酸":77,"C":27,"Mg":9,"Ca":119,"Fe":2.0,"Zn":0.2,"K":350}},
+  {name:"枝豆", serving:"可食部80g", n:{"A":18,"E":0.8,"B1":0.19,"B2":0.12,"B6":0.12,"葉酸":208,"C":22,"Mg":50,"Ca":46,"Fe":2.0,"Zn":1.1,"K":472}},
+  {name:"かぼちゃ煮", serving:"100g", n:{"A":330,"E":4.9,"B1":0.07,"B2":0.09,"B6":0.22,"葉酸":42,"C":32,"Mg":25,"Ca":15,"Fe":0.5,"Zn":0.3,"K":430}},
+  {name:"きのこソテー", serving:"100g", n:{"D":1.2,"B1":0.15,"B2":0.30,"B6":0.12,"葉酸":45,"Mg":20,"Fe":0.6,"Zn":0.6,"K":350}},
+  {name:"海藻サラダ", serving:"1皿 約70g", n:{"A":70,"B1":0.03,"B2":0.08,"葉酸":35,"Mg":45,"Ca":85,"Fe":1.2,"Zn":0.3,"K":300}},
+  {name:"トマトサラダ", serving:"トマト150g", n:{"A":68,"E":1.4,"B1":0.08,"B2":0.03,"B6":0.12,"葉酸":33,"C":23,"Mg":14,"Ca":11,"Fe":0.3,"Zn":0.2,"K":315}}
+);
+
+foodMenus.soup.push(
+
+  {name:"大根の味噌汁", serving:"1杯", n:{"A":5,"B1":0.04,"B2":0.04,"B6":0.06,"葉酸":22,"C":6,"Mg":20,"Ca":30,"Fe":0.5,"Zn":0.3,"K":240}},
+
+  {name:"豚汁", serving:"1杯", n:{"A":95,"E":0.6,"B1":0.20,"B2":0.10,"B6":0.14,"B12":0.1,"葉酸":32,"C":10,"Mg":34,"Ca":48,"Fe":0.9,"Zn":0.8,"K":430}},
+  {name:"わかめと卵のスープ", serving:"1杯", n:{"A":80,"D":1.0,"E":0.5,"B1":0.04,"B2":0.17,"B6":0.05,"B12":0.4,"葉酸":24,"Mg":22,"Ca":42,"Fe":0.7,"Zn":0.5,"K":180}},
+  {name:"ミネストローネ", serving:"1杯", n:{"A":160,"E":1.4,"B1":0.12,"B2":0.08,"B6":0.16,"葉酸":48,"C":24,"Mg":28,"Ca":45,"Fe":1.0,"Zn":0.5,"K":500}}
+);
+
+foodMenus.snack.push(
+
+  {name:"干し芋", serving:"50g", n:{"A":3,"E":0.7,"B1":0.06,"B2":0.04,"B6":0.13,"葉酸":18,"C":5,"Mg":23,"Ca":27,"Fe":0.6,"Zn":0.2,"K":490}},
+  {name:"ゆで卵", serving:"1個 約50g", n:{"A":105,"D":1.9,"E":0.7,"B1":0.03,"B2":0.22,"B6":0.04,"B12":0.6,"葉酸":25,"Mg":6,"Ca":25,"Fe":0.8,"Zn":0.6,"K":65}},
+  {name:"高カカオチョコレート", serving:"20g", n:{"E":0.2,"B1":0.03,"B2":0.04,"B6":0.02,"葉酸":6,"Mg":46,"Ca":16,"Fe":2.0,"Zn":0.7,"K":140}},
+
+  {name:"プロセスチーズ", serving:"2個 約40g", n:{"A":100,"D":0.1,"E":0.4,"B2":0.15,"B12":1.3,"葉酸":11,"Mg":8,"Ca":252,"Fe":0.1,"Zn":1.3,"K":24}},
+  {name:"牛乳", serving:"200ml", n:{"A":76,"D":0.6,"E":0.2,"B1":0.08,"B2":0.30,"B12":0.6,"葉酸":10,"Mg":20,"Ca":220,"Fe":0.04,"Zn":0.8,"K":300}},
+  {name:"無調整豆乳", serving:"200ml", n:{"E":0.6,"B1":0.06,"B2":0.04,"B6":0.12,"葉酸":56,"Mg":50,"Ca":30,"Fe":2.4,"Zn":0.8,"K":380}},
+  {name:"みかん", serving:"2個 約160g", n:{"A":134,"E":0.6,"B1":0.16,"B2":0.05,"B6":0.10,"葉酸":35,"C":51,"Mg":16,"Ca":34,"Fe":0.2,"Zn":0.2,"K":240}},
+  {name:"いちご", serving:"150g", n:{"E":0.6,"B1":0.05,"B2":0.03,"B6":0.06,"葉酸":135,"C":93,"Mg":20,"Ca":26,"Fe":0.5,"Zn":0.3,"K":255}}
+);
+
+
+// ---- 朝食・コンビニ・外食メニュー追加 ----
+foodMenus.staple.push(
+  {name:"食パン", serving:"6枚切り1枚 約60g", n:{"B1":0.07,"B2":0.04,"B6":0.03,"葉酸":18,"Mg":13,"Ca":18,"Fe":0.5,"Zn":0.4,"K":58}},
+  {name:"トースト＋バター", serving:"6枚切り1枚＋バター5g", n:{"A":35,"E":0.2,"B1":0.07,"B2":0.04,"B6":0.03,"葉酸":18,"Mg":13,"Ca":20,"Fe":0.5,"Zn":0.4,"K":60}},
+  {name:"チーズトースト", serving:"6枚切り1枚＋チーズ20g", n:{"A":80,"D":0.1,"E":0.3,"B1":0.07,"B2":0.12,"B12":0.6,"葉酸":24,"Mg":17,"Ca":140,"Fe":0.5,"Zn":1.0,"K":70}},
+  {name:"コンビニおにぎり（鮭）", serving:"1個", n:{"D":1.5,"B1":0.05,"B2":0.05,"B6":0.10,"B12":0.8,"葉酸":7,"Mg":18,"Ca":10,"Fe":0.4,"Zn":0.8,"K":100}},
+  {name:"コンビニおにぎり（梅）", serving:"1個", n:{"B1":0.03,"B2":0.03,"B6":0.04,"葉酸":6,"Mg":12,"Ca":8,"Fe":0.3,"Zn":0.7,"K":70}},
+  {name:"コンビニサンドイッチ", serving:"1パック", n:{"A":110,"D":0.8,"E":1.0,"B1":0.18,"B2":0.22,"B6":0.12,"B12":0.7,"葉酸":45,"C":6,"Mg":35,"Ca":120,"Fe":1.2,"Zn":1.5,"K":300}},
+  {name:"外食 かけそば", serving:"1杯", n:{"B1":0.12,"B2":0.06,"B6":0.12,"葉酸":28,"Mg":65,"Ca":35,"Fe":1.6,"Zn":1.0,"K":220}},
+  {name:"外食 ざるそば", serving:"1人前", n:{"B1":0.13,"B2":0.06,"B6":0.13,"葉酸":30,"Mg":70,"Ca":35,"Fe":1.7,"Zn":1.1,"K":230}}
+);
+
+foodMenus.mainDish.push(
+  {name:"目玉焼き", serving:"卵1個", n:{"A":105,"D":1.9,"E":0.7,"B1":0.03,"B2":0.22,"B6":0.04,"B12":0.6,"葉酸":25,"Mg":6,"Ca":25,"Fe":0.8,"Zn":0.6,"K":65}},
+  {name:"目玉焼き＋ベーコン", serving:"卵1個＋ベーコン2枚", n:{"A":110,"D":2.0,"E":0.9,"B1":0.15,"B2":0.25,"B6":0.08,"B12":0.8,"葉酸":26,"Mg":11,"Ca":30,"Fe":1.0,"Zn":1.0,"K":180}},
+  {name:"スクランブルエッグ", serving:"卵2個", n:{"A":220,"D":3.8,"E":1.4,"B1":0.07,"B2":0.45,"B6":0.09,"B12":1.1,"葉酸":50,"Mg":12,"Ca":55,"Fe":1.6,"Zn":1.2,"K":140}},
+  {name:"コンビニ サラダチキン", serving:"1個 約100g", n:{"B1":0.10,"B2":0.10,"B6":0.55,"B12":0.2,"葉酸":8,"Mg":28,"Ca":8,"Fe":0.4,"Zn":0.7,"K":350}},
+  {name:"コンビニ 焼き魚パック（鮭）", serving:"1パック", n:{"A":24,"D":24,"E":1.0,"B1":0.12,"B2":0.15,"B6":0.50,"B12":4.5,"葉酸":15,"Mg":24,"Ca":15,"Fe":0.5,"Zn":0.6,"K":300}},
+  {name:"コンビニ 豆腐バー", serving:"1本", n:{"B1":0.08,"B2":0.04,"B6":0.06,"葉酸":16,"Mg":55,"Ca":80,"Fe":1.7,"Zn":0.7,"K":150}},
+  {name:"外食 牛丼（並）", serving:"1杯", n:{"A":25,"E":0.8,"B1":0.20,"B2":0.20,"B6":0.30,"B12":1.8,"葉酸":18,"Mg":45,"Ca":35,"Fe":2.2,"Zn":4.0,"K":500}},
+  {name:"外食 親子丼", serving:"1杯", n:{"A":180,"D":2.3,"E":1.2,"B1":0.20,"B2":0.38,"B6":0.40,"B12":1.1,"葉酸":40,"Mg":42,"Ca":70,"Fe":1.7,"Zn":2.2,"K":500}},
+  {name:"外食 生姜焼き定食の主菜", serving:"豚肉120g", n:{"B1":0.95,"B2":0.25,"B6":0.42,"B12":0.5,"葉酸":5,"Mg":30,"Ca":18,"Fe":0.9,"Zn":2.2,"K":420}},
+  {name:"外食 焼き魚定食の主菜（サバ）", serving:"サバ100g", n:{"A":38,"D":5.0,"E":1.2,"B1":0.15,"B2":0.29,"B6":0.50,"B12":13.0,"葉酸":12,"Mg":30,"Ca":20,"Fe":1.2,"Zn":1.1,"K":400}},
+  {name:"外食 刺身盛り合わせ", serving:"約120g", n:{"A":30,"D":6.0,"E":1.0,"B1":0.12,"B2":0.18,"B6":0.55,"B12":5.0,"葉酸":15,"Mg":45,"Ca":25,"Fe":1.2,"Zn":1.0,"K":420}}
+);
+
+foodMenus.sideDish.push(
+  {name:"プレーンヨーグルト", serving:"100g", n:{"A":33,"D":0.1,"B1":0.04,"B2":0.14,"B12":0.1,"葉酸":11,"Mg":12,"Ca":120,"Zn":0.4,"K":170}},
+  {name:"ヨーグルト＋バナナ", serving:"ヨーグルト100g＋バナナ1/2本", n:{"A":33,"D":0.1,"E":0.3,"B1":0.07,"B2":0.16,"B6":0.23,"B12":0.1,"葉酸":24,"C":8,"Mg":28,"Ca":123,"Fe":0.2,"Zn":0.5,"K":350}},
+  {name:"ヨーグルト＋きなこ", serving:"ヨーグルト100g＋きなこ10g", n:{"A":33,"D":0.1,"E":0.2,"B1":0.05,"B2":0.16,"B6":0.05,"B12":0.1,"葉酸":18,"Mg":36,"Ca":140,"Fe":0.8,"Zn":0.7,"K":230}},
+  {name:"コンビニ 海藻サラダ", serving:"1パック", n:{"A":55,"E":0.4,"B1":0.04,"B2":0.08,"B6":0.07,"葉酸":35,"C":8,"Mg":40,"Ca":65,"Fe":0.9,"Zn":0.3,"K":260}},
+  {name:"コンビニ カップサラダ", serving:"1パック", n:{"A":120,"E":1.0,"B1":0.08,"B2":0.07,"B6":0.12,"葉酸":55,"C":25,"Mg":25,"Ca":45,"Fe":0.8,"Zn":0.3,"K":350}},
+  {name:"コンビニ ひじき煮", serving:"1パック", n:{"A":45,"B1":0.04,"B2":0.06,"B6":0.05,"葉酸":22,"Mg":42,"Ca":90,"Fe":1.4,"Zn":0.5,"K":200}},
+  {name:"外食 冷ややっこ", serving:"小鉢1皿", n:{"B1":0.08,"B2":0.04,"B6":0.05,"葉酸":12,"Mg":50,"Ca":85,"Fe":1.5,"Zn":0.6,"K":150}},
+  {name:"外食 ほうれん草のおひたし", serving:"小鉢1皿", n:{"A":260,"E":1.2,"B1":0.07,"B2":0.12,"B6":0.09,"葉酸":65,"C":10,"Mg":40,"Ca":30,"Fe":1.2,"Zn":0.4,"K":300}}
+);
+
+foodMenus.soup.push(
+  {name:"コンビニ しじみ味噌汁", serving:"1杯", n:{"B12":6.0,"B1":0.03,"B2":0.08,"B6":0.04,"葉酸":10,"Mg":18,"Ca":35,"Fe":1.0,"Zn":0.7,"K":180}},
+  {name:"外食 わかめ味噌汁", serving:"1杯", n:{"B1":0.04,"B2":0.05,"B6":0.05,"葉酸":16,"Mg":24,"Ca":40,"Fe":0.6,"Zn":0.3,"K":190}}
+);
+
+foodMenus.snack.push(
+  {name:"ギリシャヨーグルト", serving:"1個 約100g", n:{"A":35,"D":0.1,"B1":0.04,"B2":0.18,"B12":0.2,"葉酸":10,"Mg":12,"Ca":110,"Zn":0.6,"K":150}},
+  {name:"コンビニ バナナ", serving:"1本", n:{"E":0.5,"B1":0.05,"B2":0.04,"B6":0.38,"葉酸":26,"C":16,"Mg":32,"Ca":6,"Fe":0.3,"Zn":0.2,"K":360}},
+  {name:"コンビニ 素焼きナッツ", serving:"25g", n:{"E":6.5,"B1":0.08,"B2":0.18,"B6":0.05,"葉酸":18,"Mg":70,"Ca":55,"Fe":1.0,"Zn":0.9,"K":180}},
+  {name:"カフェラテ", serving:"1杯 約240ml", n:{"A":80,"D":0.4,"B1":0.08,"B2":0.28,"B12":0.5,"葉酸":10,"Mg":20,"Ca":200,"Zn":0.7,"K":300}}
+);
+
+populateMenus();
+
+// 元の診断ボタン後にもメニュー計算を更新
+const originalCalc = document.getElementById("calc");
+originalCalc.addEventListener("click", ()=>setTimeout(updateMeal, 50));
+
+
+function getMealTotals(){
+  const total = {};
+  for(const cat of Object.keys(foodMenus)){
+    const sel = document.getElementById(cat);
+    if(!sel) continue;
+    const f = foodMenus[cat][Number(sel.value || 0)];
+    if(!f) continue;
+    for(const [k,v] of Object.entries(f.n || {})){
+      total[k] = (total[k] || 0) + v;
+    }
+  }
+  return total;
+}
+
+function drawRadar(){
+  const canvas = document.getElementById("radarCanvas");
+  if(!canvas || result.classList.contains("hidden")) return;
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  const nutrients = [
+    ["ビタミンA","A"],["ビタミンD","D"],["ビタミンE","E"],
+    ["B1","B1"],["B2","B2"],["B6","B6"],
+    ["B12","B12"],["葉酸","葉酸"],["ビタミンC","C"],
+    ["Ca","Ca"],["Mg","Mg"],["鉄","Fe"],["亜鉛","Zn"],["K","K"]
+  ];
+
+  const totals = getMealTotals();
+  const cx = W/2, cy = H/2;
+  const radius = Math.min(W,H)*0.34;
+  const labelRadius = radius*1.23;
+  const levels = [0.25,0.5,0.75,1.0];
+  const N = nutrients.length;
+
+  // background
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0,0,W,H);
+
+  // grid polygons
+  ctx.strokeStyle = "#dfe7e2";
+  ctx.lineWidth = 1.5;
+  levels.forEach(level=>{
+    ctx.beginPath();
+    nutrients.forEach((_,i)=>{
+      const a = -Math.PI/2 + i*2*Math.PI/N;
+      const x = cx + Math.cos(a)*radius*level;
+      const y = cy + Math.sin(a)*radius*level;
+      i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    });
+    ctx.closePath();
+    ctx.stroke();
+  });
+
+  // axes
+  ctx.strokeStyle = "#e8eeea";
+  nutrients.forEach((_,i)=>{
+    const a = -Math.PI/2 + i*2*Math.PI/N;
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.lineTo(cx+Math.cos(a)*radius, cy+Math.sin(a)*radius);
+    ctx.stroke();
+  });
+
+  // 100% line emphasized
+  ctx.save();
+  ctx.setLineDash([8,6]);
+  ctx.strokeStyle = "#8b9792";
+  ctx.lineWidth = 2.2;
+  ctx.beginPath();
+  nutrients.forEach((_,i)=>{
+    const a = -Math.PI/2 + i*2*Math.PI/N;
+    const x = cx + Math.cos(a)*radius;
+    const y = cy + Math.sin(a)*radius;
+    i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  });
+  ctx.closePath();
+  ctx.stroke();
+  ctx.restore();
+
+  // intake polygon (cap display at 150% so graph stays readable)
+  const pcts = nutrients.map(([label,key])=>{
+    let fullName = label;
+    if(label==="B1") fullName="ビタミンB1";
+    if(label==="B2") fullName="ビタミンB2";
+    if(label==="B6") fullName="ビタミンB6";
+    if(label==="B12") fullName="ビタミンB12";
+    if(label==="Ca") fullName="カルシウム";
+    if(label==="Mg") fullName="マグネシウム";
+    if(label==="K") fullName="カリウム";
+    const target = currentTarget(fullName);
+    return target ? ((totals[key] || 0)/target*100) : 0;
+  });
+
+  ctx.beginPath();
+  pcts.forEach((pct,i)=>{
+    const a = -Math.PI/2 + i*2*Math.PI/N;
+    const r = radius*Math.min(pct,150)/100;
+    const x = cx + Math.cos(a)*r;
+    const y = cy + Math.sin(a)*r;
+    i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  });
+  ctx.closePath();
+  ctx.fillStyle = "rgba(91,127,112,0.18)";
+  ctx.strokeStyle = "#5b7f70";
+  ctx.lineWidth = 3;
+  ctx.fill();
+  ctx.stroke();
+
+  // points
+  pcts.forEach((pct,i)=>{
+    const a = -Math.PI/2 + i*2*Math.PI/N;
+    const r = radius*Math.min(pct,150)/100;
+    const x = cx + Math.cos(a)*r;
+    const y = cy + Math.sin(a)*r;
+    ctx.beginPath();
+    ctx.arc(x,y,4,0,Math.PI*2);
+    ctx.fillStyle = "#5b7f70";
+    ctx.fill();
+  });
+
+  // labels
+  ctx.fillStyle = "#22302b";
+  ctx.font = '700 18px -apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",Meiryo,sans-serif';
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  nutrients.forEach(([label],i)=>{
+    const a = -Math.PI/2 + i*2*Math.PI/N;
+    const x = cx + Math.cos(a)*labelRadius;
+    const y = cy + Math.sin(a)*labelRadius;
+    ctx.fillText(label,x,y);
+  });
+
+  // center text
+  ctx.fillStyle = "#6f7b76";
+  ctx.font = '600 14px -apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",Meiryo,sans-serif';
+  ctx.fillText("100% = 1日の目安量",cx,cy);
+}
+
+// existing updateMeal function is wrapped so radar refreshes every selection change
+const _updateMealOriginal = updateMeal;
+updateMeal = function(){
+  _updateMealOriginal();
+  drawRadar();
+};
+
+
+// レーダーチャートを各メニュー変更に確実に連動
+["staple","mainDish","sideDish","soup","snack"].forEach(id=>{
+  const el = document.getElementById(id);
+  if(el){
+    el.addEventListener("change", ()=>{
+      requestAnimationFrame(drawRadar);
+    });
+  }
+});
+
+// 年齢・性別・月経を変えたときも再描画
+[ageEl, sexEl, menstruationEl].forEach(el=>{
+  if(el){
+    el.addEventListener("change", ()=>{
+      if(!result.classList.contains("hidden")){
+        setTimeout(drawRadar, 20);
+      }
+    });
+  }
+});
+
+window.addEventListener("resize", drawRadar);
+document.getElementById("calc").addEventListener("click", ()=>setTimeout(drawRadar, 80));
+
+
+
+</script>
+</body>
+</html>
